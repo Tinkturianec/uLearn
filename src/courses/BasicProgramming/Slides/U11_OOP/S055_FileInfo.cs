@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using uLearn.CSharp;
 
@@ -36,7 +35,7 @@ namespace uLearn.Courses.BasicProgramming.Slides.U11_OOP
 		[HideOnSlide]
 		static bool Check(params string[] filenames)
 		{
-			filenames = filenames.Select(z => z.Replace('\\', Path.DirectorySeparatorChar)).ToArray();
+			filenames = filenames.Select(z => z.Replace('\\', System.IO.Path.DirectorySeparatorChar)).ToArray();
 			var files = filenames.Select(z => new FileInfo(z)).ToList();
 			var dirsExpected = GetAlbumsEthalon(files);
 			var dirsActual = GetAlbums(files);
@@ -48,20 +47,13 @@ namespace uLearn.Courses.BasicProgramming.Slides.U11_OOP
 				dirsActual.Select(z => z.FullName).Aggregate("", (a, b) => a + "\n" + b),
 				dirsExpected.Select(z => z.FullName).Aggregate("", (a, b) => a + "\n" + b));
 
-			if (dirsActual.Count != dirsExpected.Count)
-			{
-				Console.WriteLine(errorMessage);
-				return false;
-			}
-			dirsActual = dirsActual.OrderBy(z => z.FullName).ToList();
-			dirsExpected = dirsExpected.OrderBy(z => z.FullName).ToList();
-			for (int i = 0; i < dirsActual.Count; i++)
-				if (dirsActual[i].FullName != dirsExpected[i].FullName)
-				{
-					Console.WriteLine(errorMessage);
-					return false;
-				}
-			return true;
+			var dirsActualNames = dirsActual.Select(z => z.FullName).OrderBy(s => s);
+			var dirsExpectedNames = dirsExpected.Select(z => z.FullName).OrderBy(s => s);
+
+			if (dirsExpectedNames.SequenceEqual(dirsActualNames))
+				return true;
+			Console.WriteLine(errorMessage);
+			return false;
 		}
 
 		[HideOnSlide]
@@ -80,6 +72,63 @@ namespace uLearn.Courses.BasicProgramming.Slides.U11_OOP
 			/*uncomment
 			...
 			*/
+		}
+
+		internal class FileInfo
+		{
+			private readonly string file;
+
+			public FileInfo(string file)
+			{
+				this.file = file;
+			}
+
+			public string Extension {
+				get { return System.IO.Path.GetExtension(file); }
+			}
+
+			public DirectoryInfo Directory {
+				get { return new DirectoryInfo(System.IO.Path.GetDirectoryName(file)); } 
+			}
+		}
+
+		internal class DirectoryInfo : IEquatable<DirectoryInfo>
+		{
+			private readonly string name;
+
+			public DirectoryInfo(string name)
+			{
+				this.name = name;
+			}
+
+			public string FullName {
+				get { return name; }
+			}
+
+			public bool Equals(DirectoryInfo other)
+			{
+				if (ReferenceEquals(null, other))
+					return false;
+				if (ReferenceEquals(this, other))
+					return true;
+				return string.Equals(name, other.name);
+			}
+
+			public override bool Equals(object obj)
+			{
+				if (ReferenceEquals(null, obj))
+					return false;
+				if (ReferenceEquals(this, obj))
+					return true;
+				if (obj.GetType() != GetType())
+					return false;
+				return Equals((DirectoryInfo)obj);
+			}
+
+			public override int GetHashCode()
+			{
+				return (name != null ? name.GetHashCode() : 0);
+			}
 		}
 	}
 }
