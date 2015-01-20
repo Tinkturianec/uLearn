@@ -83,16 +83,38 @@ namespace uLearn.Courses.BasicProgramming.Slides.U11_OOP
 				this.file = file;
 			}
 
-			public string Extension {
+			public string Extension 
+			{
 				get { return System.IO.Path.GetExtension(file); }
 			}
 
-			public DirectoryInfo Directory {
-				get { return new DirectoryInfo(System.IO.Path.GetDirectoryName(file)); } 
+			public string Name
+			{
+				get { return System.IO.Path.GetFileName(file); }
+			}
+
+			public string FullName 
+			{
+				get { return file; }
+			}
+
+			public string DirectoryName
+			{
+				get { return System.IO.Path.GetDirectoryName(file); }
+			}
+
+			public DirectoryInfo Directory 
+			{
+				get { return new DirectoryInfo(DirectoryName); } 
+			}
+
+			public string ToString()
+			{
+				return file;
 			}
 		}
 
-		internal class DirectoryInfo : IEquatable<DirectoryInfo>
+		internal class DirectoryInfo
 		{
 			private readonly string name;
 
@@ -105,29 +127,9 @@ namespace uLearn.Courses.BasicProgramming.Slides.U11_OOP
 				get { return name; }
 			}
 
-			public bool Equals(DirectoryInfo other)
+			public string ToString()
 			{
-				if (ReferenceEquals(null, other))
-					return false;
-				if (ReferenceEquals(this, other))
-					return true;
-				return string.Equals(name, other.name);
-			}
-
-			public override bool Equals(object obj)
-			{
-				if (ReferenceEquals(null, obj))
-					return false;
-				if (ReferenceEquals(this, obj))
-					return true;
-				if (obj.GetType() != GetType())
-					return false;
-				return Equals((DirectoryInfo)obj);
-			}
-
-			public override int GetHashCode()
-			{
-				return (name != null ? name.GetHashCode() : 0);
+				return name;
 			}
 		}
 	}
