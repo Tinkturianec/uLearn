@@ -108,7 +108,7 @@ namespace uLearn.Courses.BasicProgramming.Slides.U11_OOP
 				get { return new DirectoryInfo(DirectoryName); } 
 			}
 
-			public string ToString()
+			public override string ToString()
 			{
 				return file;
 			}
@@ -127,7 +127,7 @@ namespace uLearn.Courses.BasicProgramming.Slides.U11_OOP
 				get { return name; }
 			}
 
-			public string ToString()
+			public override string ToString()
 			{
 				return name;
 			}
