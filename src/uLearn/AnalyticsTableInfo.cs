@@ -30,12 +30,12 @@ namespace uLearn
 			get { return Good + NotUnderstand + NotWatched + Trivial; }
 		}
 
-		public Rates()
+		public Rates(int good = 0, int notUnderstand = 0, int notWatched = 0, int trivial = 0)
 		{
-			Good = 0;
-			NotUnderstand = 0;
-			NotWatched = 0;
-			Trivial = 0;
+			Good = good;
+			NotUnderstand = notUnderstand;
+			NotWatched = notWatched;
+			Trivial = trivial;
 		}
 
 		public void AddGood()

@@ -98,5 +98,18 @@ namespace uLearn.Web.DataContexts
 		{
 			return db.Hints.Count(x => x.UserId == userId && x.SlideId == slideId);
 		}
+
+		public Dictionary<string, int> GetUsedHintsCount(Course course)
+		{
+			return db.Hints
+				.Where(h => h.CourseId == course.Id)
+				.GroupBy(h => h.SlideId)
+				.Select(g => new
+				{
+					g.Key,
+					Value = g.Count()
+				})
+				.ToDictionary(a => a.Key, a => a.Value);
+		}
 	}
 }

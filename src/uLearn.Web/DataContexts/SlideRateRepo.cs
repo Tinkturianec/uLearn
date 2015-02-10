@@ -88,5 +88,21 @@ namespace uLearn.Web.DataContexts
 							? "Тривиально"
 							: null;
 		}
+
+		public Dictionary<string, Rates> GetRates(Course course)
+		{
+			return db.SlideRates
+				.Where(r => r.CourseId == course.Id)
+				.GroupBy(r => r.SlideId)
+				.Select(r => new
+				{
+					SlideId = r.Key,
+					Good = r.Count(rate => rate.Rate == SlideRates.Good),
+					NotUnderstand = r.Count(rate => rate.Rate == SlideRates.NotUnderstand),
+					NotWatched = r.Count(rate => rate.Rate == SlideRates.NotWatched),
+					Trivial = r.Count(rate => rate.Rate == SlideRates.Trivial)
+				})
+				.ToDictionary(arg => arg.SlideId, arg => new Rates(arg.Good, arg.NotUnderstand, arg.NotWatched, arg.Trivial));
+		}
 	}
 }

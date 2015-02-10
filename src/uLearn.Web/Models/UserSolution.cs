@@ -13,16 +13,19 @@ namespace uLearn.Web.Models
 
 		[Required]
 		[StringLength(64)]
+		[Index("TotalStatistic", 1)]
 		public string CourseId { get; set; }
 
 		[Required]
 		[StringLength(64)]
 		[Index("AcceptedList", 1)]
+		[Index("TotalStatistic", 3)]
 		public string SlideId { get; set; }
 
 		public virtual ApplicationUser User { get; set; }
 
 		[StringLength(64)]
+		[Index("TotalStatistic", 4)]
 		public string UserId { get; set; }
 
 		public virtual TextBlob SolutionCode { get; set; }
@@ -43,6 +46,7 @@ namespace uLearn.Web.Models
 
 		[Required]
 		[Index("AcceptedList", 2)]
+		[Index("TotalStatistic", 2)]
 		public bool IsRightAnswer { get; set; }
 
 		[Required]

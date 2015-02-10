@@ -188,5 +188,34 @@ namespace uLearn.Web.DataContexts
 				.DistinctBy(q => q.QuizId)
 				.ToDictionary(q => q.QuizId, q => q.IsRightQuizBlock);
 		}
+
+		public Dictionary<string, int> GetSubmitQuizzesCount(Course course)
+		{
+			return db.UserQuizzes
+				.Where(v => v.CourseId == course.Id)
+				.GroupBy(v => v.SlideId)
+				.Select(g => new { g.Key, Count = g.Select(v => v.UserId).Distinct().Count() })
+				.ToDictionary(a => a.Key, a => a.Count);
+		}
+
+		public Dictionary<string, int> GetAverageStatistics(Course course)
+		{
+			return db.UserQuizzes
+				.Where(v => v.CourseId == course.Id)
+				.GroupBy(v => v.SlideId)
+				.Select(g => new
+				{
+					g.Key,
+					Value = g
+						.GroupBy(q => q.UserId)
+						.Select(x => x
+							.GroupBy(y => y.QuizId, (s, quizzes) => quizzes.All(z => z.IsRightQuizBlock) ? 100 : 0)
+							.DefaultIfEmpty()
+							.Average())
+						.DefaultIfEmpty()
+						.Average()
+				})
+				.ToDictionary(a => a.Key, a => (int)a.Value);
+		}
 	}
 }

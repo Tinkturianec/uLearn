@@ -31,5 +31,12 @@ namespace uLearn
 			if (dictionary.TryGetValue(key, out v)) return v;
 			return defaultValue;
 		}
+
+		public static TValue GetOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
+		{
+			TValue v;
+			dictionary.TryGetValue(key, out v);
+			return v;
+		}
 	}
 }

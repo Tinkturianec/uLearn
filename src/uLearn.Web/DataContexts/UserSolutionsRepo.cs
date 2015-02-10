@@ -174,5 +174,14 @@ namespace uLearn.Web.DataContexts
 				.Select(x => x.SlideId)
 				.Distinct());
 		}
+
+		public Dictionary<string, int> GetAcceptedSolutionsCount(Course course)
+		{
+			return db.UserSolutions
+				.Where(v => v.CourseId == course.Id && v.IsRightAnswer)
+				.GroupBy(v => v.SlideId)
+				.Select(g => new { g.Key, Count = g.Select(v => v.UserId).Distinct().Count() })
+				.ToDictionary(a => a.Key, a => a.Count);
+		}
 	}
 }

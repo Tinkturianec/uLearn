@@ -32,7 +32,7 @@ namespace uLearn.Web.Controllers
 			this.courseManager = courseManager;
 		}
 
-		private ActionResult TotalStatistics(string courseId)
+		public ActionResult TotalStatistics(string courseId)
 		{
 			var model = CreateTotalStatistics(courseId);
 			return View(model);
@@ -53,6 +53,15 @@ namespace uLearn.Web.Controllers
 		private Dictionary<string, AnalyticsTableInfo> CreateTotalStatisticsInfo(Course course)
 		{
 			var tableInfo = new Dictionary<string, AnalyticsTableInfo>();
+			var usersCount = db.Users.Count();
+
+			var visitersCounts = visitersRepo.GetVisitersCounts(course);
+			var rates = slideRateRepo.GetRates(course);
+			var acceptedSolutionsCount = userSolutionsRepo.GetAcceptedSolutionsCount(course);
+			var submitQuizzesCount = userQuizzesRepo.GetSubmitQuizzesCount(course);
+			var averageStatistics = userQuizzesRepo.GetAverageStatistics(course);
+			var usedHintsCount = slideHintRepo.GetUsedHintsCount(course);
+
 			foreach (var slide in course.Slides)
 			{
 				var exerciseSlide = (slide as ExerciseSlide);
@@ -60,24 +69,30 @@ namespace uLearn.Web.Controllers
 				var isExercise = exerciseSlide != null;
 				var isQuiz = quizSlide != null;
 				var hintsCountOnSlide = isExercise ? exerciseSlide.HintsMd.Count() : 0;
-				var visitersCount = visitersRepo.GetVisitersCount(slide.Id, course.Id);
+				var visitersCount = visitersCounts.GetOrDefault(slide.Id);
 				tableInfo.Add(slide.Index + ". " + slide.Info.UnitName + ": " + slide.Title, new AnalyticsTableInfo
 				{
-					Rates = slideRateRepo.GetRates(slide.Id, course.Id),
+					Rates = rates.GetOrDefault(slide.Id),
 					VisitersCount = visitersCount,
 					IsExercise = isExercise,
 					IsQuiz = isQuiz,
 					SolversPercent = isExercise
-						? (visitersCount == 0 ? 0 : (int)((double)userSolutionsRepo.GetAcceptedSolutionsCount(slide.Id, course.Id) / visitersCount) * 100)
+						? (visitersCount == 0 ? 0 : (int)((double)acceptedSolutionsCount.GetOrDefault(slide.Id) / visitersCount * 100))
 						: isQuiz
-							? (visitersCount == 0 ? 0 : (int)((double)userQuizzesRepo.GetSubmitQuizCount(slide.Id, course.Id) / visitersCount) * 100)
+							? (visitersCount == 0 ? 0 : (int)((double)submitQuizzesCount.GetOrDefault(slide.Id) / visitersCount * 100))
 							: 0,
-					SuccessQuizPercentage = isQuiz ? userQuizzesRepo.GetAverageStatistics(slide.Id, course.Id) : 0,
+					SuccessQuizPercentage = isQuiz ? averageStatistics.GetOrDefault(slide.Id) : 0,
 					TotalHintCount = hintsCountOnSlide,
-					HintUsedPercent = isExercise ? slideHintRepo.GetHintUsedPercent(slide.Id, course.Id, hintsCountOnSlide, db.Users.Count()) : 0
+					HintUsedPercent = isExercise ? GetHintUsedPercent(usedHintsCount.GetOrDefault(slide.Id), hintsCountOnSlide, usersCount) : 0
 				});
 			}
 			return tableInfo;
+		}
+
+		private static int GetHintUsedPercent(int usedHintsCount, int hintsOnSlide, int usersCount)
+		{
+			var maxPossibleHintsCount = hintsOnSlide * usersCount;
+			return (int)(100 * (double)usedHintsCount / maxPossibleHintsCount);
 		}
 
 		public ActionResult UsersStatistics(string courseId)
