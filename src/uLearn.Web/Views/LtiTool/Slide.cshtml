@@ -1,0 +1,29 @@
+﻿@model System.Collections.Specialized.NameValueCollection
+
+@{
+	Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>title</title>
+		<style>
+			td {
+				border: 1px solid black;
+			}
+		</style>
+	</head>
+	<body style="font-family: monospace">
+		<table>
+			@foreach (var q in Model.AllKeys.OrderBy(s => s))
+			{
+				<tr>
+					<td>@q</td>
+					<td>@Model.Get(q)</td>
+				</tr>
+			}
+		</table>
+	</body>
+</html>
