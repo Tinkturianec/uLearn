@@ -1,29 +1,34 @@
-﻿@model System.Collections.Specialized.NameValueCollection
+﻿@using uLearn.Model.Blocks
+@using uLearn.Quizes
+@model LtiPageModel
 
 @{
 	Layout = null;
+	ViewBag.Slide = Model.Slide;
+	var blocks = Model.Slide.Blocks.Where(b => !(b is ExerciseBlock)).ToList();
 }
 
 <!DOCTYPE html>
 
 <html>
 	<head>
-		<title>title</title>
-		<style>
-			td {
-				border: 1px solid black;
-			}
-		</style>
+		@Styles.Render("~/css")
 	</head>
-	<body style="font-family: monospace">
-		<table>
-			@foreach (var q in Model.AllKeys.OrderBy(s => s))
-			{
-				<tr>
-					<td>@q</td>
-					<td>@Model.Get(q)</td>
-				</tr>
-			}
-		</table>
+	<body>
+		<h1>@Model.Slide.Title</h1>
+		@if (Model.Slide is QuizSlide)
+		{
+			@Html.Action("Quiz", "Quiz", new { slide = Model.Slide as QuizSlide, courseId = Model.CourseId, userId = Model.UserId })
+		}
+		else
+		{
+			@Html.DisplayFor(m => blocks)
+		}
+		@*		@if (Model.Slide is ExerciseSlide)*@
+		@*		{*@
+		@*			@SlideHtml.Block(((ExerciseSlide)Model.Slide).Exercise, Model.BlockRenderContext)*@
+		@*		}*@
+		
+		@Scripts.Render("~/main-js")
 	</body>
 </html>

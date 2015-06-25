@@ -1,16 +1,14 @@
-﻿using System;
-using System.Web.Mvc;
-using LtiLibrary.Core.Lti1;
-using LtiLibrary.Core.OAuth;
+﻿using System.Web.Mvc;
+using Microsoft.AspNet.Identity;
 using uLearn.Web.DataContexts;
-using uLearn.Web.LTI;
+using uLearn.Web.Models;
 
 namespace uLearn.Web.Controllers
 {
 	public class LtiToolController : Controller
 	{
 		private readonly CourseManager courseManager;
-		private readonly ConsumersRepo consumersRepo = new ConsumersRepo();
+		private readonly VisitersRepo visitersRepo = new VisitersRepo();
 
 		public LtiToolController()
 			: this(WebCourseManager.Instance)
@@ -23,44 +21,24 @@ namespace uLearn.Web.Controllers
 		}
 
 
+		[Authorize]
 		public ActionResult Slide(string courseId, int slideIndex)
 		{
-			var request = Request.ToLtiRequest();
-			var consumer = request.ConsumerKey;
-			var consumerSecret = consumersRepo.FindConsumer(consumer).Secret;
-
-			var sign = request.GenerateSignature(consumerSecret);
-			request.Parameters.Add("calculated sign", sign);
-
-//			var sign = OAuthUtility.GenerateSignature(Request.HttpMethod, Request.Url, Request.Params, "test");
-			return View(request.Parameters);
-//			var authenticateResult = GetAuthenticateResult(request);
-//			if (!IsAuthenticated(request))
-//				return null;
-
-//			return RedirectToAction("Slide", "Course", new { courseId, slideIndex });
-//			return View(model: authenticateResult);
+			var course = courseManager.GetCourse(courseId);
+			var slide = course.Slides[slideIndex];
+//			var blockRenderContext = new BlockRenderContext(
+//				course, 
+//				slide, 
+//				slide.Info.DirectoryRelativePath, 
+//				slide.Blocks.Select(block => (object)null).ToArray());
+			var model = new LtiPageModel
+			{
+				UserId = User.Identity.GetUserId(),
+				CourseId = course.Id,
+				Slide = slide,
+//				BlockRenderContext = blockRenderContext
+			};
+			return View("Slide", model);
 		}
-
-		private bool IsAuthenticated()
-		{
-			var request = Request.ToLtiRequest();
-
-			var timeout = TimeSpan.FromMinutes(5);
-			var oauthTimestampAbsolute = OAuthConstants.Epoch.AddSeconds(request.Timestamp);
-			if (DateTime.UtcNow - oauthTimestampAbsolute > timeout)
-				return false;
-
-			var consumer = consumersRepo.FindConsumer(request.ConsumerKey);
-			if (consumer == null)
-				return false;
-
-			var signature = request.GenerateSignature(consumer.Secret);
-			if (!signature.Equals(request.Signature))
-				return false;
-
-			return true;
-		}
-
 	}
 }
