@@ -24,5 +24,6 @@ namespace uLearn.Web.DataContexts
 		public DbSet<UnitAppearance> Units { get; set; }
 		public DbSet<TextBlob> Texts { get; set; }
 		public DbSet<Consumer> Consumers { get; set; }
+		public DbSet<LtiRequestModel> LtiRequests { get; set; }
 	}
 }

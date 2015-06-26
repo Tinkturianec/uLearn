@@ -246,6 +246,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="codemirror\CsCompleterGenerator.cs" />
+    <Compile Include="Migrations\201506261003397_LtiRequests.cs" />
+    <Compile Include="Migrations\201506261003397_LtiRequests.Designer.cs">
+      <DependentUpon>201506261003397_LtiRequests.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Models\LtiRequestModel.cs" />
+    <Compile Include="DataContexts\LtiRequestsRepo.cs" />
     <Compile Include="Controllers\LtiToolController.cs" />
     <Compile Include="Controllers\QuestionsController.cs" />
     <Compile Include="Controllers\UnitController.cs" />
@@ -543,6 +549,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201506161237172_AddLtiConsumerData.resx">
       <DependentUpon>201506161237172_AddLtiConsumerData.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201506261003397_LtiRequests.resx">
+      <DependentUpon>201506261003397_LtiRequests.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
