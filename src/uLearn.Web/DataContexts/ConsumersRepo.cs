@@ -18,7 +18,6 @@ namespace uLearn.Web.DataContexts
 			this.db = db;
 		}
 
-
 		public Consumer FindConsumer(string consumerKey)
 		{
 			return db.Consumers.SingleOrDefault(consumer => consumer.Key == consumerKey);

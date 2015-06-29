@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace uLearn.Web.Models
 {
@@ -15,6 +14,6 @@ namespace uLearn.Web.Models
 		public string Key { get; set; }
 
 		[Required]
-		public String Secret { get; set; }
+		public string Secret { get; set; }
 	}
 }
