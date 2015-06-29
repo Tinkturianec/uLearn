@@ -39,7 +39,7 @@ namespace uLearn.Web.Controllers
 			var userId = User.Identity.GetUserId();
 
 			var ltiRequestJson = FindLtiRequestJson();
-			if (ltiRequestJson != null)
+			if (!string.IsNullOrWhiteSpace(ltiRequestJson))
 				await ltiRequestsRepo.Update(courseId, slide.Id, userId, ltiRequestJson);
 
 //			var blockRenderContext = new BlockRenderContext(
